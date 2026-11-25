@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : scraper/alertes_audit.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : scraper/alertes_audit.py
 # Le projet vit sur 6 depots et DEUX comptes GitHub. Un fichier
 # depose au mauvais endroit ne provoque aucune erreur : il dort.
 
@@ -44,7 +44,7 @@ ETAT = os.environ.get("AUDIT_ETAT", "data/floor_state.json")
 # est vide — ce qui est exactement ce que fait un champ de lancement laisse
 # blanc. Le defaut n'est alors JAMAIS applique, et urlopen("") echoue sur
 # « unknown url type ». Vu en vrai au 1er lancement du 20/07.
-_DEFAUT_BASELINES = ("https://github.com/fanablefrance/jetonveve/releases/"
+_DEFAUT_BASELINES = ("https://github.com/Leonessa2/jetonveve/releases/"
                      "download/prices-full/prices_baselines.csv.gz")
 BASELINES = os.environ.get("BASELINES_SRC", "").strip() or _DEFAUT_BASELINES
 

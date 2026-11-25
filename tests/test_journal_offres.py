@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_journal_offres.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_journal_offres.py
 # Le projet vit sur 6 depots et DEUX comptes GitHub. Un fichier depose au
 # mauvais endroit ne provoque aucune erreur : il dort.
 """📒 LOT 186 — LE JOURNAL DES OFFRES STACKR : ce qu'il ecrit, ce qu'il refuse.

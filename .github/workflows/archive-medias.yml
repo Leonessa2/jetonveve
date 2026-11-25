@@ -43,7 +43,7 @@ jobs:
       - name: Récupérer le JSONL depuis preda
         uses: actions/checkout@v4
         with:
-          repository: VeVePreda/scrapeur-veve
+          repository: Leonessa2/scrapeur-veve
           token: ${{ secrets.PREDA_TOKEN }}
           path: _preda
           sparse-checkout: data/archive_veille.jsonl

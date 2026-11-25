@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_sentinelle_sources.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_sentinelle_sources.py
 """La sentinelle doit etre plus fiable que ce qu'elle surveille.
 
 ⭐⭐ POURQUOI CE FICHIER EST LONG POUR UN MODULE DE 130 LIGNES. On a deja paye

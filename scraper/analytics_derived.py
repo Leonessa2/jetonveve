@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : scraper/analytics_derived.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : scraper/analytics_derived.py
 """analytics_derived — couche analyse DuckDB sur transfers-full (jetonveve).
 
 Lit transfers_full.csv.gz (Release `transfers-full`) et produit des CSV

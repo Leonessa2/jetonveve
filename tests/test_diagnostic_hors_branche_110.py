@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_diagnostic_hors_branche_110.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_diagnostic_hors_branche_110.py
 """LOT 110 — le diagnostic compte MEME quand le rafraichissement horaire
 n'a pas eu lieu.
 

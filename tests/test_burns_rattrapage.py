@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_burns_rattrapage.py   (NEUF)
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_burns_rattrapage.py   (NEUF)
 # ═══════════════════════════════════════════════════════════════════════════════
 # 🔬 LE BANC DU RATTRAPAGE DES BURNS
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : .github/workflows/floor-watch.yml
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/floor-watch.yml
 # Le projet vit sur 6 depots et DEUX comptes GitHub. Un fichier
 # depose au mauvais endroit ne provoque aucune erreur : il dort.
 
@@ -237,7 +237,7 @@ jobs:
         continue-on-error: true
         uses: actions/checkout@v4
         with:
-          repository: VeVePreda/scrapeur-veve
+          repository: Leonessa2/scrapeur-veve
           token: ${{ secrets.PREDA_TOKEN }}
           path: _preda
           sparse-checkout: |

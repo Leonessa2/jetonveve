@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : scraper/stackr_fiches.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : scraper/stackr_fiches.py
 # Le projet vit sur 6 depots et DEUX comptes GitHub. Un fichier
 # depose au mauvais endroit ne provoque aucune erreur : il dort.
 

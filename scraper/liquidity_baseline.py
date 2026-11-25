@@ -38,7 +38,7 @@ except Exception:                       # test unitaire pur, hors reseau
     requests = None                     # type: ignore
 
 # Release publique par defaut (tag `liquidity-full`). Repli -prev.
-DEFAULT_URL = ("https://github.com/fanablefrance/jetonveve/releases/download/"
+DEFAULT_URL = ("https://github.com/Leonessa2/jetonveve/releases/download/"
                "liquidity-full/liquidity_baselines.csv.gz")
 PREV_URL = DEFAULT_URL.replace("liquidity-full/", "liquidity-full-prev/")
 

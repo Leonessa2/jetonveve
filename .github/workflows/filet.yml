@@ -1,9 +1,9 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : .github/workflows/filet.yml   (NEUF)
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/filet.yml   (NEUF)
 # ═══════════════════════════════════════════════════════════════════════════════
 # 🔊 LE FILET — UNE PANNE NE COMPTE QUE SI ELLE ARRIVE QUELQUE PART
 # ═══════════════════════════════════════════════════════════════════════════════
 #
-# 🔗 LE JUMEAU DE `VeVePreda/scrapeur-veve/.github/workflows/filet.yml`.
+# 🔗 LE JUMEAU DE `Leonessa2/scrapeur-veve/.github/workflows/filet.yml`.
 # Le raisonnement complet (pourquoi UN fichier et non une etape dans chacun,
 # pourquoi on n'alerte pas sur `cancelled`, pourquoi ce job echoue expres quand
 # le secret manque) est ecrit en tete de celui-la. Ici, ce qui est PROPRE a ce

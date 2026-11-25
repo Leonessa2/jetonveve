@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : scraper/journal_prix.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : scraper/journal_prix.py
 """📓 journal_prix — UN POINT DE PRIX PAR PIECE ET PAR JOUR, QU'ON JETAIT DEJA.
 
 POURQUOI CE MODULE EXISTE

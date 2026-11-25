@@ -40,7 +40,7 @@ except Exception:                       # test unitaire pur
     requests = None                     # type: ignore
 
 # URL publique par defaut (release prices-full). Repli -prev en secours.
-DEFAULT_URL = ("https://github.com/fanablefrance/jetonveve/releases/download/"
+DEFAULT_URL = ("https://github.com/Leonessa2/jetonveve/releases/download/"
                "prices-full/prices_baselines.csv.gz")
 PREV_URL = DEFAULT_URL.replace("prices-full/", "prices-full-prev/")
 

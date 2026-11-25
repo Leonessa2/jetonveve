@@ -33,10 +33,10 @@ jobs:
           cp data/gochain_wallets.csv regs/ 2>/dev/null \
             || echo "Pas de gochain_wallets.csv local (GoChain ignore ce run)."
           curl -fsSL -o regs/wallet_registry_deep.csv \
-            https://raw.githubusercontent.com/astronemagame-maker/astronema/main/data/wallet_registry_deep.csv \
+            https://raw.githubusercontent.com/Leonessa2/astronema/main/data/wallet_registry_deep.csv \
             || echo "deep indisponible"
           curl -fsSL -o regs/wallet_registry_imx.csv \
-            https://raw.githubusercontent.com/lepaolo/paolo/main/data/wallet_registry_imx.csv \
+            https://raw.githubusercontent.com/Leonessa2/paolo/main/data/wallet_registry_imx.csv \
             || echo "imx indisponible"
           echo "Registres recuperes :" && ls -lh regs/
 

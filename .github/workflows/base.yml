@@ -51,10 +51,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          A=$(gh release view chain-archive -R astronemagame-maker/astronema \
+          A=$(gh release view chain-archive -R Leonessa2/astronema \
                 --json assets --jq '[.assets[]|select(.name|endswith(".csv.gz"))
                                     |"\(.name):\(.size)"]|sort|join(",")')
-          B=$(gh release view imx-archive -R lepaolo/paolo \
+          B=$(gh release view imx-archive -R Leonessa2/paolo \
                 --json assets --jq '[.assets[]|select(.name|endswith(".csv.gz"))
                                     |"\(.name):\(.size)"]|sort|join(",")')
           # ⛔ Un amont injoignable ne doit PAS produire une empreinte stable :
@@ -86,8 +86,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p dl_static dl_imx
-          gh release download chain-archive --repo astronemagame-maker/astronema --dir dl_static --pattern '*.csv.gz'
-          gh release download imx-archive --repo lepaolo/paolo --dir dl_imx --pattern '*.csv.gz'
+          gh release download chain-archive --repo Leonessa2/astronema --dir dl_static --pattern '*.csv.gz'
+          gh release download imx-archive --repo Leonessa2/paolo --dir dl_imx --pattern '*.csv.gz'
 
       - name: Sauver le cache immediatement
         if: ${{ steps.cache-static.outputs.cache-hit != 'true' }}
@@ -120,7 +120,7 @@ jobs:
         run: |
           mkdir -p dl dl_snap data
           cp -al dl_static/. dl/ 2>/dev/null || cp -r dl_static/. dl/
-          gh release download holders-snapshot --repo lepaolo/paolo --dir dl_snap --pattern '*.csv.gz'
+          gh release download holders-snapshot --repo Leonessa2/paolo --dir dl_snap --pattern '*.csv.gz'
 
       - name: Sources du repo prive preda (continuite + grand livre)
         env:
@@ -130,9 +130,9 @@ jobs:
             echo "PREDA_TOKEN absent : base sans les 31 derniers jours CC ni ledger/profiles."
             exit 0
           fi
-          gh release download chain-archive-daily --repo VeVePreda/scrapeur-veve --dir dl --pattern '*.csv.gz' \
+          gh release download chain-archive-daily --repo Leonessa2/scrapeur-veve --dir dl --pattern '*.csv.gz' \
             || echo "chain-archive-daily inaccessible."
-          gh release download ledger-data --repo VeVePreda/scrapeur-veve --dir data --pattern '*.csv.gz' \
+          gh release download ledger-data --repo Leonessa2/scrapeur-veve --dir data --pattern '*.csv.gz' \
             || echo "ledger-data inaccessible."
           ls dl | wc -l && ls data || true
 

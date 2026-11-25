@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_price_history.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_price_history.py
 # Le projet vit sur 6 depots et DEUX comptes GitHub. Un fichier
 # depose au mauvais endroit ne provoque aucune erreur : il dort.
 

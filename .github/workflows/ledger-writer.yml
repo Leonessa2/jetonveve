@@ -59,7 +59,7 @@ jobs:
         run: |
           ls data/wallet_profiles.csv.gz >/dev/null 2>&1 || { echo "Pas de profils a publier."; exit 0; }
           BASE="${{ github.event.inputs.release_base }}"
-          [ -z "$BASE" ] && BASE="https://github.com/fanablefrance/jetonveve/releases/download/analytics-derived"
+          [ -z "$BASE" ] && BASE="https://github.com/Leonessa2/jetonveve/releases/download/analytics-derived"
           curl -sL --fail -o data/ledger.csv.gz "$BASE/ledger_full.csv.gz" \
             || echo "ledger_full.csv.gz indisponible - profils seuls."
           gh release view ledger-data >/dev/null 2>&1 || \

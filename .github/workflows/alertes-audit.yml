@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : .github/workflows/alertes-audit.yml
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/alertes-audit.yml
 #
 # 🔍 LE BANC D'ESSAI DES ALERTES — il ne poste RIEN et n'ecrit RIEN.
 #
@@ -45,7 +45,7 @@ jobs:
         continue-on-error: true
         uses: actions/checkout@v4
         with:
-          repository: VeVePreda/scrapeur-veve
+          repository: Leonessa2/scrapeur-veve
           token: ${{ secrets.PREDA_TOKEN }}
           path: _preda
           sparse-checkout: data/elements.csv

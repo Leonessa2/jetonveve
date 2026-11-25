@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : scraper/burns_fraicheur.py   (NEUF)
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : scraper/burns_fraicheur.py   (NEUF)
 # ═══════════════════════════════════════════════════════════════════════════════
 # 🔎 LE BURN DU JOUR EST-IL LA ? — une mesure, pas une supposition
 # ═══════════════════════════════════════════════════════════════════════════════

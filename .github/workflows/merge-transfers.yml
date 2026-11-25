@@ -85,7 +85,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p arch/holders arch/imx arch/cc
-          if ! gh release download holders-snapshot -R lepaolo/paolo \
+          if ! gh release download holders-snapshot -R Leonessa2/paolo \
                  --dir arch/holders --pattern '*.csv.gz' --clobber; then
             if [ "$STRICT" = "true" ]; then
               echo "⛔ REFUS : holders-snapshot (sans lui, IMX sort sans veve_uuid) indisponible sur un run PLANIFIE."
@@ -100,7 +100,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! gh release download imx-archive -R lepaolo/paolo \
+          if ! gh release download imx-archive -R Leonessa2/paolo \
                  --dir arch/imx --pattern '*.csv.gz' --clobber; then
             if [ "$STRICT" = "true" ]; then
               echo "⛔ REFUS : imx-archive indisponible sur un run PLANIFIE."
@@ -115,7 +115,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if ! gh release download chain-archive -R astronemagame-maker/astronema \
+          if ! gh release download chain-archive -R Leonessa2/astronema \
                  --dir arch/cc --pattern '*.csv.gz' --clobber; then
             if [ "$STRICT" = "true" ]; then
               echo "⛔ REFUS : chain-archive (CollectChain profond) indisponible sur un run PLANIFIE."
@@ -142,7 +142,7 @@ jobs:
               exit 1
             fi
             echo "ℹ️ Pas de PREDA_TOKEN — quotidien preda ignore (run manuel)."
-          elif ! gh release download chain-archive-daily -R VeVePreda/scrapeur-veve \
+          elif ! gh release download chain-archive-daily -R Leonessa2/scrapeur-veve \
                    --dir arch/cc --pattern '*.csv.gz' --clobber; then
             if [ "$STRICT" = "true" ]; then
               echo "⛔ REFUS : chain-archive-daily illisible sur un run PLANIFIE."

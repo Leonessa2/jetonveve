@@ -9,13 +9,13 @@ on:
   schedule:
     # ⭐ CE CRON N'EST PLUS LE DECLENCHEUR PRINCIPAL, C'EST LE FILET.
     # Le declencheur normal est desormais l'evenement `catalogue-pret`, envoye
-    # par catalogue-export (VeVePreda/scrapeur-veve) DES QUE la release
+    # par catalogue-export (Leonessa2/scrapeur-veve) DES QUE la release
     # `catalogue` est publiee. Ce cron ne sert plus que si le dispatch n'est
     # pas arrive. La porte d'idempotence ci-dessous evite le double travail.
     - cron: "11 7 * * *"        # 07:11 UTC — filet, si `catalogue-pret` n'est pas venu
   # ⚠️ POURQUOI repository_dispatch ET PAS workflow_run : `workflow_run` ne
   #    franchit pas la frontiere d'un depot, et catalogue-export vit dans
-  #    VeVePreda/scrapeur-veve. Meme mecanisme que le pinger de floor-watch.
+  #    Leonessa2/scrapeur-veve. Meme mecanisme que le pinger de floor-watch.
   # ⚠️ Un `repository_dispatch` n'a PAS d'inputs : le mode vaut donc `append`,
   #    exactement comme le cron. C'est voulu — un backfill ne se declenche pas
   #    tout seul.
@@ -271,12 +271,12 @@ jobs:
             echo "⚠️ VEVESITE_TOKEN absent — pas de dispatch. Le cron de 07:41 reste le filet."
             exit 0
           fi
-          if gh api -X POST repos/VeVePreda/veve-sites/dispatches \
+          if gh api -X POST repos/Leonessa2/veve-sites/dispatches \
                -f event_type=prix-prets >/dev/null 2>&1; then
             echo "✅ rebuild-daily prevenu (evenement « prix-prets »)."
           else
             echo "⚠️ Dispatch refuse. Cause la plus probable : VEVESITE_TOKEN n'a pas"
-            echo "   « Contents: write » sur VeVePreda/veve-sites, exige par"
+            echo "   « Contents: write » sur Leonessa2/veve-sites, exige par"
             echo "   POST /repos/{owner}/{repo}/dispatches."
             echo "   Ce n'est PAS bloquant : le cron de 07:41 reste le filet."
           fi

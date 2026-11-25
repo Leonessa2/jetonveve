@@ -1,4 +1,4 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_diagnostic_0708.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_diagnostic_0708.py
 """LOT 109 — le diagnostic des canaux d'alerte, ecrit dans l'etat.
 
 🔴🔴🔴 CE QUE CE BANC PROTEGE, ET POURQUOI IL EXISTE.

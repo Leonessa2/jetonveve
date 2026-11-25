@@ -1,9 +1,9 @@
-# ⚠️ DEPOT : fanablefrance/jetonveve   ·   CHEMIN : tests/test_journal_prix.py
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : tests/test_journal_prix.py
 """🔬 BANC DU JOURNAL DES PRIX — 12 sections, 45 controles, juges par 9 mutants.
 
 🔴🔴 OU CE BANC TOURNE, ET POURQUOI CA COMPTE
 ---------------------------------------------
-`fanablefrance/jetonveve` N'A AUCUN WORKFLOW DE TESTS. Un banc pose dans
+`Leonessa2/jetonveve` N'A AUCUN WORKFLOW DE TESTS. Un banc pose dans
 `tests/` y serait donc **MUET** : zero run, zero rouge, et le silence
 ressemblerait trait pour trait a un succes. -> [[regle-silence-du-non-execute]]
 
