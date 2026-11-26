@@ -521,8 +521,26 @@ def run_backfill(catalogue: str, store: str, state_dir: str) -> int:
     return 0
 
 
+def _decimale_point(x):
+    """« 1,95 » (virgule du Sheet FR) -> « 1.95 ». 26/11/2026 : 14 772 floors
+    sur 21 465 du catalogue portaient une virgule ; `_num` et le TRY_CAST du
+    publish les rendaient inexploitables -> JETES en silence au publish
+    (« sans floor exploitable »). Ne touche qu'a un nombre a UNE virgule."""
+    s = (x or "").strip() if isinstance(x, str) else x
+    if isinstance(s, str) and s.count(",") == 1 and "." not in s:
+        t = s.replace(",", ".")
+        try:
+            float(t)
+            return t
+        except ValueError:
+            return x
+    return x
+
+
 def run_append(catalogue: str, store: str, source_for_last: str) -> int:
     cat = read_catalogue(catalogue)
+    for row in cat:
+        row["floor"] = _decimale_point(row.get("floor"))
     last = last_values(source_for_last)
     now = dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
     buf: List[tuple] = []
