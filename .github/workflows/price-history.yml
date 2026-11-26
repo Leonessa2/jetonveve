@@ -133,6 +133,23 @@ jobs:
             echo "ℹ️ Premiere execution — pas de store existant."
           fi
 
+      # 🩹 COMBLEMENT DU TROU (26/11/2026, projet Scrapeur). Du 30/09 au 25/11,
+      # le catalogue publie etait fige (tracker coupe) : aucun point ici. Ces
+      # fichiers portent les VRAIS floors VeVe de la periode, tires de la
+      # release `journal-prix` (floor-watch, USD), au changement seulement.
+      # `listings` = derniere valeur connue (journal-prix n'a pas d'offres ;
+      # une case vide deviendrait 0 sur veveprice). Integres a CHAQUE run,
+      # AVANT la collecte : le publish supprime les doublons exacts (prouve :
+      # meme fichier a l'octet pres apres double integration).
+      - name: "Comblement des trous connus (data/prices/comblement_*.csv)"
+        run: |
+          for f in data/prices/comblement_*.csv; do
+            [ -f "$f" ] || continue
+            [ -f prices.csv ] || head -1 "$f" > prices.csv
+            tail -n +2 "$f" >> prices.csv
+            echo "🩹 $f : $(($(wc -l < "$f") - 1)) ligne(s) integree(s)."
+          done
+
       - name: "Collecte (mode = ${{ github.event.inputs.mode || 'append' }})"
         env:
           PH_MODE: ${{ github.event.inputs.mode || 'append' }}
