@@ -634,10 +634,13 @@ def run_publish(store: str, parquet_out: str, csv_out: str) -> int:
     con = duckdb.connect()
     src = ("read_csv('%s', header=true, columns={'veve_uuid':'VARCHAR',"
            "'ts_utc':'VARCHAR','floor':'VARCHAR','listings':'VARCHAR'})" % clean)
-    q = ("SELECT veve_uuid, ts_utc, TRY_CAST(floor AS DOUBLE) AS floor, "
-         "TRY_CAST(listings AS BIGINT) AS listings FROM %s "
-         "WHERE TRY_CAST(floor AS DOUBLE) IS NOT NULL "
-         "ORDER BY veve_uuid, ts_utc" % src)
+    # 26/11/2026 : DISTINCT sur les VALEURS converties. Le dedup texte
+    # ci-dessus voyait « 100 » et « 100.0 » comme deux lignes (15 021 paires
+    # identiques mesurees apres le comblement du trou 30/09-25/11).
+    base = ("SELECT veve_uuid, ts_utc, TRY_CAST(floor AS DOUBLE) AS floor, "
+            "TRY_CAST(listings AS BIGINT) AS listings FROM %s "
+            "WHERE TRY_CAST(floor AS DOUBLE) IS NOT NULL" % src)
+    q = "SELECT DISTINCT * FROM (%s) ORDER BY veve_uuid, ts_utc" % base
     con.execute(f"COPY ({q}) TO '{parquet_out}' (FORMAT parquet, COMPRESSION zstd)")
     con.execute(f"COPY ({q}) TO '{csv_out}' (FORMAT csv, HEADER, COMPRESSION gzip)")
     n_out = con.execute(
@@ -645,6 +648,7 @@ def run_publish(store: str, parquet_out: str, csv_out: str) -> int:
     n_items = con.execute(
         f"SELECT count(DISTINCT veve_uuid) FROM read_parquet('{parquet_out}')"
     ).fetchone()[0]
+    n_valide = con.execute(f"SELECT count(*) FROM ({base})").fetchone()[0]
     try:
         os.remove(clean)
     except OSError:
@@ -670,8 +674,8 @@ def run_publish(store: str, parquet_out: str, csv_out: str) -> int:
     # possibles d'une ligne lue et on verifie que leur somme fait le total. Un
     # compte qui se referme est verifiable ; un compte qui ne se referme pas
     # est une invitation a ouvrir le code — c'est ce qui a permis de trouver.
-    doublons = (n_in - bad) - len(seen)
-    sans_floor = len(seen) - n_out
+    doublons = (n_in - bad) - len(seen) + (n_valide - n_out)
+    sans_floor = len(seen) - n_valide
     print(f"publish : {n_in} lignes lues -> {n_out} ecrites "
           f"sur {n_items} items. Ecrits : {parquet_out} + {csv_out}.", flush=True)
     print(f"  detail : {bad} malformee(s) · {doublons} doublon(s) · "
