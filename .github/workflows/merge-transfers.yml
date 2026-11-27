@@ -170,6 +170,11 @@ jobs:
               sleep 30
             done ) &
           RELEVE=$!
+          # 💾 27/11/2026 : methode « disque » (tri sur disque). Essai sur les
+          #    vraies donnees (essai-fusion.yml, run 46034038031) : IDENTIQUE a
+          #    l'octet a la methode memoire (39 957 125 lignes, meme empreinte),
+          #    pic 4,8 Go au lieu de 15,1 Go. Retour arriere : MERGE_METHODE=memoire.
+          export MERGE_METHODE=disque
           MESURE=""; [ -x /usr/bin/time ] && MESURE="/usr/bin/time -v -o temps.txt"
           $MESURE python -m scraper.merge_transfers arch transfers_full.csv.gz \
             || { kill $RELEVE; exit 1; }
