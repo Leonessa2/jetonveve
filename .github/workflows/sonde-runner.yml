@@ -1,0 +1,31 @@
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/sonde-runner.yml
+# 🔬 SONDE SANS PUBLICATION (27/11/2026) : la Fusion du 27/11 est morte faute de
+# memoire sur « ubuntu-latest » (= Ubuntu 26.04 depuis novembre) alors qu'elle
+# passait le 06/10 sur ubuntu-24.04. Ce workflow affiche seulement la memoire,
+# l'espace d'echange (swap), les processeurs et le disque des deux machines.
+# ⛔ Aucun telechargement, aucune ecriture, aucun secret.
+name: Sonde machine (memoire, sans publication)
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  mesurer:
+    strategy:
+      fail-fast: false
+      matrix:
+        machine: [ubuntu-24.04, ubuntu-latest]
+    runs-on: ${{ matrix.machine }}
+    timeout-minutes: 5
+    steps:
+      - name: Memoire, swap, processeurs, disque
+        run: |
+          echo "machine demandee : ${{ matrix.machine }}"
+          grep PRETTY_NAME /etc/os-release
+          echo "processeurs : $(nproc)"
+          free -m
+          echo "--- swap ---"; swapon --show || echo "aucun swap"
+          df -h / | tail -1
+          python3 --version
