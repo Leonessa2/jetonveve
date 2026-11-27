@@ -50,6 +50,14 @@ on:
       - "price-history"                                       # price-history.yml
       - "Raccord classement -> series_uuid"                   # raccord.yml
       - "Backfill supply / gems / MCP / cover exclusive"      # supply-backfill.yml
+      # 🔴 LOT S (27/11/2026) — absents du filet, mesures le 27/11 :
+      #    burns.yml echoue CHAQUE JOUR depuis le 07/10, sans une alerte.
+      - "Burns OMI - StackR (quotidien)"                      # burns.yml
+      - "Burns — rattrapage du jour"                          # burns-rattrapage.yml
+      - "Fiches StackR (rotation quotidienne)"                # fiches-stackr.yml
+      # 🧪 Essai volontaire : lancer `essai-filet.yml` a la main ⇒ une alerte
+      #    DOIT arriver dans le salon technique. Sinon le filet est sourd.
+      - "Essai du filet (echec volontaire)"                   # essai-filet.yml
     types: [completed]
 
 permissions: {}
@@ -111,6 +119,14 @@ jobs:
               "Les first_seen de wallets n'ont pas ete refondus : les eres de collectionneurs restent sur l'etat precedent.",
             "Archive — médias de la veille":
               "Les medias de la veille n'ont pas ete archives. ⚠️ Ceux-la s'effacent : relancer sans attendre.",
+            "Burns OMI - StackR (quotidien)":
+              "Les burns OMI du jour ne sont pas releves (StackR) : les compteurs de burns des sites et de Discord restent sur l'etat precedent.",
+            "Burns — rattrapage du jour":
+              "Le rattrapage des burns n'a pas pu relancer le releve du jour.",
+            "Fiches StackR (rotation quotidienne)":
+              "La rotation des fiches StackR du jour n'a pas ete faite.",
+            "Essai du filet (echec volontaire)":
+              "🧪 ESSAI VOLONTAIRE (Lot S) : si tu lis ce message, le filet de jetonveve marche. Rien a reparer.",
             "Archive des salons (messages + médias)":
               "Des messages Discord n'ont pas ete sauves. ⚠️ Ceux-la s'effacent : relancer sans attendre.",
           }

@@ -1,0 +1,26 @@
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/essai-filet.yml
+#
+# 🧪 LOT S (27/11/2026) — L'ECHEC VOLONTAIRE DU FILET.
+# Le filet de ce depot n'a rien poste depuis le 06/10 alors que
+# « Fusion transferts » a echoue 7 fois et `burns.yml` chaque jour. Ce
+# workflow ne fait qu'UNE chose : echouer quand on le lance a la main.
+# ⇒ Lance-le une fois et REGARDE le salon technique : une alerte « Essai du
+#   filet » doit y arriver dans la minute. Si rien n'arrive, le filet est sourd
+#   et c'est LUI qu'il faut reparer.
+# ⛔ Aucun cron, aucune ecriture, aucun secret : il ne publie rien.
+name: Essai du filet (echec volontaire)
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  echouer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Echouer expres
+        run: |
+          echo "🧪 Echec volontaire pour verifier que le filet alerte."
+          exit 1
