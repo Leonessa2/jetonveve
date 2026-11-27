@@ -25,6 +25,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Place sur le disque au depart (avant tout telechargement)
+        run: |
+          df -BM --output=size,used,avail / | tail -1 | awk '{print "[disque depart] taille " $1 " · utilise " $2 " · libre " $3}'
+
       - name: Telecharger les 4 sources (comme merge-transfers.yml)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -37,19 +41,29 @@ jobs:
           GH_TOKEN="$PREDA" gh release download chain-archive-daily -R Leonessa2/scrapeur-veve --dir arch/cc --pattern '*.csv.gz'
           ls arch/*/ | wc -l; du -sh arch/*
 
+      - name: Disque apres telechargement (point de depart des deux Fusions)
+        run: |
+          df -BM --output=size,used,avail / | tail -1 | awk '{print "[disque apres telechargement] taille " $1 " · utilise " $2 " · libre " $3}'
+
       - name: Fusion « memoire » (methode actuelle)
         run: |
-          ( while true; do free -m | awk -v t="$(date -u +%H:%M:%S)" '/Mem:/{m=$3} /Swap:/{s=$3} END{print "[memoire] " t " memoire " m " Mo, swap " s " Mo"}'; sleep 30; done ) & R=$!
+          B0=$(df -BM --output=used / | tail -1 | tr -d ' M')
+          ( while true; do echo "$(date -u +%H:%M:%S) $(free -m | awk '/Mem:/{print $3}') $(free -m | awk '/Swap:/{print $3}') $(df -BM --output=used / | tail -1 | tr -d ' M')" | tee -a releve_memoire.txt | awk '{print "[releve] " $1 " memoire " $2 " Mo · swap " $3 " Mo · disque utilise " $4 " Mo"}'; sleep 15; done ) & R=$!
           MERGE_METHODE=memoire /usr/bin/time -v -o t_memoire.txt python -m scraper.merge_transfers arch a_memoire.csv.gz
           kill $R || true
           grep -E "Maximum resident|Elapsed" t_memoire.txt | sed 's/^/[mesure memoire] /'
+          LIBRE=$(df -BM --output=avail / | tail -1 | tr -d ' M')
+          awk -v b0="$B0" -v libre="$LIBRE" '{if($2>m)m=$2; if($3>sw)sw=$3; if($4>d)d=$4} END{printf "[pics memoire] memoire %d Mo · swap %d Mo · disque en plus au pic %d Mo (depart %d, pic %d) · libre a la fin %d Mo\n", m, sw, d-b0, b0, d, libre}' releve_memoire.txt
 
       - name: Fusion « disque » (nouvelle methode)
         run: |
-          ( while true; do free -m | awk -v t="$(date -u +%H:%M:%S)" '/Mem:/{m=$3} /Swap:/{s=$3} END{print "[memoire] " t " memoire " m " Mo, swap " s " Mo"}'; sleep 30; done ) & R=$!
+          B0=$(df -BM --output=used / | tail -1 | tr -d ' M')
+          ( while true; do echo "$(date -u +%H:%M:%S) $(free -m | awk '/Mem:/{print $3}') $(free -m | awk '/Swap:/{print $3}') $(df -BM --output=used / | tail -1 | tr -d ' M')" | tee -a releve_disque.txt | awk '{print "[releve] " $1 " memoire " $2 " Mo · swap " $3 " Mo · disque utilise " $4 " Mo"}'; sleep 15; done ) & R=$!
           MERGE_METHODE=disque /usr/bin/time -v -o t_disque.txt python -m scraper.merge_transfers arch b_disque.csv.gz
           kill $R || true
           grep -E "Maximum resident|Elapsed" t_disque.txt | sed 's/^/[mesure disque] /'
+          LIBRE=$(df -BM --output=avail / | tail -1 | tr -d ' M')
+          awk -v b0="$B0" -v libre="$LIBRE" '{if($2>m)m=$2; if($3>sw)sw=$3; if($4>d)d=$4} END{printf "[pics disque] memoire %d Mo · swap %d Mo · disque en plus au pic %d Mo (depart %d, pic %d) · libre a la fin %d Mo\n", m, sw, d-b0, b0, d, libre}' releve_disque.txt
 
       - name: Comparer ligne a ligne
         run: |
