@@ -55,6 +55,11 @@ on:
   schedule:
     - cron: "0 5 * * 2"
   workflow_dispatch:
+    inputs:
+      exiger_identique:
+        description: "Refuser de publier si le contenu differe de la release actuelle (oui/non)"
+        required: false
+        default: "non"
 
 permissions:
   contents: write
@@ -164,9 +169,14 @@ jobs:
         run: |
           # 📈 Releve memoire toutes les 30 s (go de Preda, 27/11) : lisible EN
           #    DIRECT dans la page de la tache, meme si la machine meurt.
+          # 💽 + disque (27/11, Preda) : la methode « disque » deplace la charge
+          #    de la memoire vers le disque ; on releve les deux.
+          df -BM --output=size,used,avail / | tail -1 | awk '{print "[disque depart] taille " $1 " · utilise " $2 " · libre " $3}'
+          B0=$(df -BM --output=used / | tail -1 | tr -d ' M')
           ( while true; do
-              free -m | awk -v t="$(date -u +%H:%M:%S)" \
-                '/Mem:/{m=$3" / "$2" Mo"} /Swap:/{s=$3" / "$2" Mo"} END{print "[memoire] " t " UTC  utilisee " m "  ·  swap " s}'
+              L="$(date -u +%H:%M:%S) $(free -m | awk '/Mem:/{print $3}') $(free -m | awk '/Swap:/{print $3}') $(df -BM --output=used / | tail -1 | tr -d ' M')"
+              echo "$L" >> releve.txt
+              echo "$L" | awk '{print "[memoire] " $1 " UTC  utilisee " $2 " Mo  ·  swap " $3 " Mo  ·  disque utilise " $4 " Mo"}'
               sleep 30
             done ) &
           RELEVE=$!
@@ -185,7 +195,32 @@ jobs:
             || { kill $RELEVE; exit 1; }
           kill $RELEVE || true
           if [ -f temps.txt ]; then grep -E "Maximum resident|Elapsed|Exit status" temps.txt | sed 's/^/[mesure] /' || true; fi
+          LIBRE=$(df -BM --output=avail / | tail -1 | tr -d ' M')
+          awk -v b0="$B0" -v libre="$LIBRE" '{if($2>m)m=$2; if($3>sw)sw=$3; if($4>d)d=$4} END{printf "[pics] memoire %d Mo · swap %d Mo · disque en plus au pic %d Mo · libre a la fin %d Mo\n", m, sw, d-b0, libre}' releve.txt || true
           ls -lh transfers_full.csv.gz
+
+      - name: "🔒 Contenu identique a la release actuelle (si demande)"
+        if: ${{ github.event.inputs.exiger_identique == 'oui' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 27/11/2026 (condition de Preda) : 1er passage de production en methode
+          # « disque ». Avant toute publication : meme empreinte et meme nombre de
+          # lignes que la release publiee. Sinon : REFUS, rien n'est publie et
+          # analytics.yml ne demarre pas (les etapes suivantes ne tournent pas).
+          mkdir -p actuelle
+          gh release download transfers-full -p transfers_full.csv.gz --dir actuelle --clobber
+          A=$(zcat actuelle/transfers_full.csv.gz | sha256sum | cut -c1-64); NA=$(zcat actuelle/transfers_full.csv.gz | wc -l)
+          B=$(zcat transfers_full.csv.gz | sha256sum | cut -c1-64); NB=$(zcat transfers_full.csv.gz | wc -l)
+          echo "[identique] publiee : $NA lignes, empreinte $A"
+          echo "[identique] nouvelle : $NB lignes, empreinte $B"
+          rm -rf actuelle
+          if [ "$A" = "$B" ] && [ "$NA" = "$NB" ]; then
+            echo "[identique] ✅ meme contenu : publication autorisee."
+          else
+            echo "⛔ REFUS : le contenu differe de la release publiee. Rien n'est publie, analytics.yml ne demarre pas."
+            exit 1
+          fi
 
       - name: "🛡️ Garde de non-regression — compte par ere, monotone"
         env:
