@@ -1,0 +1,67 @@
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/essai-fusion.yml
+#
+# 🔬 ESSAI SANS PUBLICATION (27/11/2026, priorite absolue de Preda) :
+# la Fusion « memoire » (actuelle, pic 15,2 Go / 15,7) contre la Fusion
+# « disque » (tri sur disque, meme resultat attendu). Sur les VRAIES donnees,
+# les deux tournent l'une apres l'autre et on compare LIGNE A LIGNE.
+# ⛔ Aucune release touchee, aucun secret ecrit : seul le journal compte.
+#    `merge-transfers.yml` reste en « memoire » tant que cet essai n'est pas
+#    identique et que Preda n'a pas vu le resultat.
+name: Essai Fusion disque (sans publication)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  comparer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Telecharger les 4 sources (comme merge-transfers.yml)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PREDA: ${{ secrets.PREDA_TOKEN }}
+        run: |
+          mkdir -p arch/holders arch/imx arch/cc
+          gh release download holders-snapshot -R Leonessa2/paolo --dir arch/holders --pattern '*.csv.gz'
+          gh release download imx-archive -R Leonessa2/paolo --dir arch/imx --pattern '*.csv.gz'
+          gh release download chain-archive -R Leonessa2/astronema --dir arch/cc --pattern '*.csv.gz'
+          GH_TOKEN="$PREDA" gh release download chain-archive-daily -R Leonessa2/scrapeur-veve --dir arch/cc --pattern '*.csv.gz'
+          ls arch/*/ | wc -l; du -sh arch/*
+
+      - name: Fusion « memoire » (methode actuelle)
+        run: |
+          ( while true; do free -m | awk -v t="$(date -u +%H:%M:%S)" '/Mem:/{m=$3} /Swap:/{s=$3} END{print "[memoire] " t " memoire " m " Mo, swap " s " Mo"}'; sleep 30; done ) & R=$!
+          MERGE_METHODE=memoire /usr/bin/time -v -o t_memoire.txt python -m scraper.merge_transfers arch a_memoire.csv.gz
+          kill $R || true
+          grep -E "Maximum resident|Elapsed" t_memoire.txt | sed 's/^/[mesure memoire] /'
+
+      - name: Fusion « disque » (nouvelle methode)
+        run: |
+          ( while true; do free -m | awk -v t="$(date -u +%H:%M:%S)" '/Mem:/{m=$3} /Swap:/{s=$3} END{print "[memoire] " t " memoire " m " Mo, swap " s " Mo"}'; sleep 30; done ) & R=$!
+          MERGE_METHODE=disque /usr/bin/time -v -o t_disque.txt python -m scraper.merge_transfers arch b_disque.csv.gz
+          kill $R || true
+          grep -E "Maximum resident|Elapsed" t_disque.txt | sed 's/^/[mesure disque] /'
+
+      - name: Comparer ligne a ligne
+        run: |
+          A=$(zcat a_memoire.csv.gz | sha256sum | cut -c1-64); B=$(zcat b_disque.csv.gz | sha256sum | cut -c1-64)
+          NA=$(zcat a_memoire.csv.gz | wc -l); NB=$(zcat b_disque.csv.gz | wc -l)
+          echo "[comparaison] memoire : $NA lignes, empreinte $A"
+          echo "[comparaison] disque  : $NB lignes, empreinte $B"
+          if [ "$A" = "$B" ]; then
+            echo "[comparaison] ✅ IDENTIQUES a l'octet (contenu decompresse)."
+          else
+            echo "[comparaison] ⛔ DIFFERENTS — premieres differences :"
+            cmp <(zcat a_memoire.csv.gz) <(zcat b_disque.csv.gz) | head -3 || true
+            diff <(zcat a_memoire.csv.gz) <(zcat b_disque.csv.gz) | head -20 || true
+            exit 1
+          fi
