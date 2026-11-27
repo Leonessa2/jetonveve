@@ -66,7 +66,13 @@ concurrency:
 
 jobs:
   merge:
-    runs-on: ubuntu-latest
+    # 🔴 27/11/2026 : FIGE sur ubuntu-24.04 (go de Preda). La Fusion du 27/11 est
+    #   morte faute de memoire sur « ubuntu-latest » (= Ubuntu 26.04 : swap =
+    #   fichier sur disque) ; le 06/10 elle passait sur 24.04 (swap = zram,
+    #   compresse en memoire). Mesure : sonde-runner.yml, run 46023276575.
+    #   ⚠️ Marge seulement : la lecture IMX garde ~24,5 M lignes en memoire.
+    #   Chantier prioritaire suivant : lire l'IMX sans tout charger.
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
       # 🔑 POINT UNIQUE de « personne ne regarde ce run ». Les 4 etapes source
@@ -156,7 +162,19 @@ jobs:
 
       - name: "Fusion (IMX habille + CollectChain, dedup + chronologique)"
         run: |
-          python -m scraper.merge_transfers arch transfers_full.csv.gz
+          # 📈 Releve memoire toutes les 30 s (go de Preda, 27/11) : lisible EN
+          #    DIRECT dans la page de la tache, meme si la machine meurt.
+          ( while true; do
+              free -m | awk -v t="$(date -u +%H:%M:%S)" \
+                '/Mem:/{m=$3" / "$2" Mo"} /Swap:/{s=$3" / "$2" Mo"} END{print "[memoire] " t " UTC  utilisee " m "  ·  swap " s}'
+              sleep 30
+            done ) &
+          RELEVE=$!
+          MESURE=""; [ -x /usr/bin/time ] && MESURE="/usr/bin/time -v -o temps.txt"
+          $MESURE python -m scraper.merge_transfers arch transfers_full.csv.gz \
+            || { kill $RELEVE; exit 1; }
+          kill $RELEVE || true
+          if [ -f temps.txt ]; then grep -E "Maximum resident|Elapsed|Exit status" temps.txt | sed 's/^/[mesure] /' || true; fi
           ls -lh transfers_full.csv.gz
 
       - name: "🛡️ Garde de non-regression — compte par ere, monotone"
