@@ -1,0 +1,58 @@
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/essai-contrat-prix.yml
+#
+# 🧪 ESSAI SUR DES COPIES (go de Preda du 28/11/2026) : price_history avec
+# CONTRAT_OFFRES_VIDES=1 sur une COPIE de prices-full et du catalogue.
+# Compte : lignes avant/apres, offres non vides restantes, points ajoutes par
+# un passage « append ». ⛔ Ne publie rien.
+name: Essai du contrat sur prices-full (sans publication)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  essayer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CONTRAT_OFFRES_VIDES: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install duckdb requests
+      - name: Copier prices-full et catalogue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download prices-full -p prices.csv.gz -D copie
+          gh release download catalogue -p catalogue.csv.gz -D copie
+          gunzip -kf copie/prices.csv.gz
+          python - <<'P'
+          import csv, gzip
+          r = list(csv.DictReader(gzip.open("copie/catalogue.csv.gz", "rt", encoding="utf-8")))
+          for x in r: x["listings"] = ""
+          w = csv.DictWriter(gzip.open("copie/catalogue_vide.csv.gz", "wt", encoding="utf-8", newline=""), fieldnames=list(r[0]))
+          w.writeheader(); w.writerows(r)
+          P
+      - name: Append (catalogue aux offres vides) puis publish, sur la copie
+        run: |
+          avant=$(($(wc -l < copie/prices.csv) - 1))
+          PH_MODE=append CATALOGUE=copie/catalogue_vide.csv.gz STORE=copie/prices.csv STATE_DIR=data/prices PARQUET_OUT=copie/rien.parquet python -m scraper.price_history
+          apres_append=$(($(wc -l < copie/prices.csv) - 1))
+          PH_MODE=publish STORE=copie/prices.csv PARQUET_OUT=copie/prices.parquet CSV_OUT=copie/prices_out.csv.gz python -m scraper.price_history
+          PH_MODE=baselines PARQUET_OUT=copie/prices.parquet STORE=copie/prices.csv BASELINES_OUT=copie/baselines.csv.gz python -m scraper.price_history
+          python - <<P
+          import csv, gzip
+          n = ne = 0
+          for r in csv.DictReader(gzip.open("copie/prices_out.csv.gz", "rt")):
+              n += 1; ne += 1 if r["listings"] else 0
+          m = sum(1 for _ in csv.DictReader(gzip.open("copie/prices.csv.gz", "rt")))
+          print(f"[essai] lignes publiees avant = {m}")
+          print(f"[essai] store de travail avant append = $avant ; apres append = $apres_append ; points ajoutes = {$apres_append - $avant}")
+          print(f"[essai] lignes publiees apres = {n} ; offres non vides restantes = {ne}")
+          P
+          ls -l copie/

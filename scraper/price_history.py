@@ -159,6 +159,14 @@ def _key(floor, listings) -> Tuple[Optional[float], Optional[int]]:
     return (_num(floor), _int(listings))
 
 
+# 📜 CONTRAT.md section 2 (go de Preda du 28/11/2026) : nombre d'offres VIDE
+#    partout, historique compris. Interrupteur eteint par defaut ("1" = allume).
+#    Allume : `listings` n'est plus ecrit ni compare (un point = un changement
+#    de FLOOR seulement), et le publish vide la colonne de TOUTES les lignes.
+def _offres_vides() -> bool:
+    return os.environ.get("CONTRAT_OFFRES_VIDES", "0").strip() == "1"
+
+
 def _iso(d: dt.date) -> str:
     return d.strftime("%Y-%m-%dT00:00:00.000Z")
 
@@ -544,9 +552,18 @@ def run_append(catalogue: str, store: str, source_for_last: str) -> int:
     last = last_values(source_for_last)
     now = dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.000Z")
     buf: List[tuple] = []
+    vides = _offres_vides()
     for row in cat:
         uuid = row["uuid"].strip()
         floor, listings = row.get("floor"), row.get("listings")
+        if vides:
+            # Contrat section 2 : on ne compare que le floor ; offres vides.
+            k = (_num(floor), None)
+            if k[0] is None:
+                continue
+            if (last.get(uuid) or (None, None))[0] != k[0]:
+                buf.append((uuid, now, floor, ""))
+            continue
         k = _key(floor, listings)
         if k == (None, None):                      # colonne vide = INCONNU
             continue
@@ -637,9 +654,11 @@ def run_publish(store: str, parquet_out: str, csv_out: str) -> int:
     # 26/11/2026 : DISTINCT sur les VALEURS converties. Le dedup texte
     # ci-dessus voyait « 100 » et « 100.0 » comme deux lignes (15 021 paires
     # identiques mesurees apres le comblement du trou 30/09-25/11).
+    col_offres = ("CAST(NULL AS BIGINT) AS listings" if _offres_vides()
+                  else "TRY_CAST(listings AS BIGINT) AS listings")   # contrat section 2
     base = ("SELECT veve_uuid, ts_utc, TRY_CAST(floor AS DOUBLE) AS floor, "
-            "TRY_CAST(listings AS BIGINT) AS listings FROM %s "
-            "WHERE TRY_CAST(floor AS DOUBLE) IS NOT NULL" % src)
+            "%s FROM %s "
+            "WHERE TRY_CAST(floor AS DOUBLE) IS NOT NULL" % (col_offres, src))
     q = "SELECT DISTINCT * FROM (%s) ORDER BY veve_uuid, ts_utc" % base
     con.execute(f"COPY ({q}) TO '{parquet_out}' (FORMAT parquet, COMPRESSION zstd)")
     con.execute(f"COPY ({q}) TO '{csv_out}' (FORMAT csv, HEADER, COMPRESSION gzip)")

@@ -104,6 +104,11 @@ jobs:
     if: needs.porte.outputs.continuer == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 350          # backfill long : reprend au run suivant (etat commite)
+    # 📜 CONTRAT.md section 2 (go de Preda du 28/11/2026) : "1" = offres vides
+    #    partout, historique compris. Publie le MEME jour que l'interrupteur du
+    #    meme nom dans catalogue-export.yml (scrapeur-veve).
+    env:
+      CONTRAT_OFFRES_VIDES: "0"
     steps:
       - uses: actions/checkout@v4
 
