@@ -55,6 +55,8 @@ on:
       - "Burns OMI - StackR (quotidien)"                      # burns.yml
       - "Burns — rattrapage du jour"                          # burns-rattrapage.yml
       - "Fiches StackR (rotation quotidienne)"                # fiches-stackr.yml
+      # 🖼️ CONTRAT.md v2 (28/11/2026) : bannieres de l'accueil de veve.me.
+      - "Bannieres VeVe (quotidien)"                          # bannieres.yml
       # 🧪 Essai volontaire : lancer `essai-filet.yml` a la main ⇒ une alerte
       #    DOIT arriver dans le salon technique. Sinon le filet est sourd.
       - "Essai du filet (echec volontaire)"                   # essai-filet.yml

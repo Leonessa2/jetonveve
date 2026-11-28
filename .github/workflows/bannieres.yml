@@ -1,0 +1,44 @@
+# ⚠️ DEPOT : Leonessa2/jetonveve   ·   CHEMIN : .github/workflows/bannieres.yml
+#
+# 🖼️ BANNIERES VeVe (CONTRAT.md v2, decision de Preda du 28/11/2026) : une
+# lecture par jour de l'accueil de www.veve.me ; la release `bannieres` est
+# REMPLACEE par les bannieres affichees au moment de la collecte (decor, pas de
+# suivi). ⛔ Page illisible ou 0 bannière -> le job echoue AVANT l'envoi : la
+# release garde la liste d'avant et le filet (filet.yml) donne l'alerte.
+name: Bannieres VeVe (quotidien)
+
+on:
+  schedule:
+    - cron: "41 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bannieres
+  cancel-in-progress: false
+
+jobs:
+  collecter:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer
+        timeout-minutes: 3
+        run: pip install requests==2.32.3
+      - name: Lire l'accueil de veve.me
+        run: python -m scraper.bannieres
+      - name: Remplacer la release bannieres
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view bannieres >/dev/null 2>&1 || \
+            gh release create bannieres --title "Bannieres VeVe (accueil de veve.me)" \
+              --notes "CONTRAT.md v2 : bannieres affichees a la collecte, remplacees chaque jour."
+          gh release upload bannieres bannieres.csv bannieres.json --clobber
+          cat bannieres.json
