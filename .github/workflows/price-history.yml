@@ -108,7 +108,7 @@ jobs:
     #    partout, historique compris. Publie le MEME jour que l'interrupteur du
     #    meme nom dans catalogue-export.yml (scrapeur-veve).
     env:
-      CONTRAT_OFFRES_VIDES: "0"
+      CONTRAT_OFFRES_VIDES: "1"
     steps:
       - uses: actions/checkout@v4
 
